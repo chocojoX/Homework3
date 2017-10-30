@@ -52,6 +52,40 @@ def dampedNewton(x0,f,g,h,tol):
     return x_new, x_hist
 
 
+def backtrackingNewtonStep(x, f, g, h):
+    grad_x = g(x)
+    hess_x = h(x)
+    phi_x = f(x)
+    if len(hess_x.shape) == 0:
+        inv_hess = 1/hess_x
+    else:
+        inv_hess = np.linalg.inv(hess_x)
+
+    lambda_x = np.dot(   np.dot(  np.transpose(grad_x),  inv_hess)   ,   grad_x)
+    estimated_gap = lambda_x**2 / 2
+
+    direction = np.dot( inv_hess,  grad_x)
+    t = 1
+    beta = 0.7
+    phi_new = phi_x+1
+    while phi_new>phi_x:
+        x_new = x - t * np.dot( inv_hess,  grad_x)
+        phi_new = f(x_new)
+        t = beta*t
+    return x_new, estimated_gap
+
+
+def  newtonLS(x0,f,g,h,tol) :
+    x_hist = []
+    estimated_gap = tol + 1
+    x_new = x0
+    while estimated_gap>tol:
+        x_new, estimated_gap = backtrackingNewtonStep(x_new, f, g, h)
+        print( "gap : %.3f" %estimated_gap)
+        x_hist.append(x_new)
+    return x_new, x_hist
+
+
 
 
 if __name__=='__main__':
@@ -71,6 +105,9 @@ if __name__=='__main__':
     tol = 0.01
     x0 = -1
     x_star, hist = dampedNewton(x0,f,g,h,tol)
+    print(x_star, f(x_star))
+
+    x_star, hist = newtonLS(x0,f,g,h,tol)
     print(x_star, f(x_star))
 
     pass
