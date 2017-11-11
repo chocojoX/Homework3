@@ -2,11 +2,15 @@ import numpy as np
 
 
 def transform_svm_primal(tau, X, y):
-    n = X.shape[0]; d=X.shape[1]
+    try:
+        n = X.shape[0]; d=X.shape[1]
+    except:
+        print("Warning, scalar use instead of matrix")
+        n = 1; d = 1
     In = np.eye(n)
-    A = np.zeros((d+n, 2*n))
-    A[d:, :n] = -In
-    A[d:, n:] = -In
+    A = np.zeros((2*n, d+n))
+    A[n:, :n] = -In
+    A[n:, d:] = -In
     for i in range(n):
         A[i, :d] = y[i] * X[i, :]
 
@@ -22,7 +26,11 @@ def transform_svm_primal(tau, X, y):
 
 
 def transform_svm_dual(tau, X, y):
-    n = X.shape[0]; d = X.shape[1]
+    try:
+        n = X.shape[0]; d=X.shape[1]
+    except:
+        print("Warning, scalar use instead of matrix")
+        n = 1; d = 1
     In = np.eye(n)
 
     A = np.zeros((2*n, n))
