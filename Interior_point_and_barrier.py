@@ -5,7 +5,10 @@ def phi(x, t, Q, p, A, b):
     quad = 0.5 * np.dot((np.dot(np.transpose(x), Q)), x)
     lin = np.dot(p, x)
     constraint = b - np.dot(A, x)
-    barrier = - np.sum(np.log(constraint))
+    try:
+        barrier = - np.sum(np.log(constraint))
+    except:
+        import pdb; pdb.set_trace()
 
     return t*(quad+lin)+barrier
 
@@ -13,14 +16,17 @@ def phi(x, t, Q, p, A, b):
 def grad(x, t, Q, p, A, b):
     quad = np.dot(Q, x)
     lin = p
-    barrier = np.dot(  A,   1/(b- np.dot(A, x))  )
+    barrier = np.dot(  np.transpose(A),   1/(b- np.dot(A, x))  )
 
     return t * (quad+lin) + barrier
 
 
 def hess(x, t, Q, p, A, b):
     quad = Q
-    barrier = np.dot(  np.dot(A, np.transpose(A)) ,  1/(b - np.dot(A, x))**2)
+    try:
+        barrier = np.dot(  np.dot(np.transpose(A), np.diag(1/(b - np.dot(A, x))**2) ) , A)
+    except:
+        barrier = np.dot(  np.dot(np.transpose(A), (1/(b - np.dot(A, x))**2 )) , A)
 
     return t*quad + barrier
 
