@@ -9,7 +9,7 @@ def transform_svm_primal(tau, X, y):
         n = 1; d = 1
     In = np.eye(n)
     A = np.zeros((2*n, d+n))
-    A[n:, :n] = -In
+    A[:n, d:] = -In
     A[n:, d:] = -In
     for i in range(n):
         A[i, :d] = y[i] * X[i, :]
