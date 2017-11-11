@@ -47,7 +47,7 @@ def dampedNewton(x0,f,g,h,tol):
     x_new = x0
     while estimated_gap>tol:
         x_new, estimated_gap = dampedNewtonStep(x_new, f, g, h)
-        print( "gap : %.3f" %estimated_gap)
+        # print( "gap : %.3f" %estimated_gap)
         x_hist.append(x_new)
     return x_new, x_hist
 
@@ -81,6 +81,27 @@ def  newtonLS(x0,f,g,h,tol) :
     x_new = x0
     while estimated_gap>tol:
         x_new, estimated_gap = backtrackingNewtonStep(x_new, f, g, h)
-        print( "gap : %.3f" %estimated_gap)
+        # print( "gap : %.3f" %estimated_gap)
         x_hist.append(x_new)
     return x_new, x_hist
+
+
+def barr_method(Q, p, A, b, x_0, mu, tol):
+    try:
+        m = A.shape[0]
+    except:
+        m=1
+    t = 0.001
+    x_start = x_0
+    hist = [x_start]
+
+    while(m/t > tol):
+        f = lambda x: phi(x,t,Q,p,A,b)
+        g = lambda x: grad(x,t,Q,p,A,b)
+        h = lambda x: hess(x,t,Q,p,A,b)
+
+        x_start, hist_ = dampedNewton(x_start, f, g, h, tol)
+        hist.append(x_start)
+        t = mu * t
+
+    return x_start, hist
